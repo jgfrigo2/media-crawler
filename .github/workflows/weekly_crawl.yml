@@ -1,0 +1,25 @@
+name: Weekly Index Update
+on:
+  schedule:
+    - cron: '0 0 * * 0' # Every Sunday at Midnight
+  workflow_dispatch: # Allows manual runs
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with: { python-version: '3.9' }
+      - name: Install dependencies
+        run: pip install requests beautifulsoup4
+      - name: Run Scraper
+        run: python scraper.py
+      - name: Push to Repo
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+          git add media.db timestamp.txt
+          git commit -m "Auto-update media index"
+          git push
